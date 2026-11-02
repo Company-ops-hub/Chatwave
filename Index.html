@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Renew Broadcast</title>
+<style>
+:root{--pri:#0f766e;--pri-ink:#fff;--bg:#f4f6f8;--card:#fff;--ink:#17212b;--mut:#64748b;--line:#e2e8f0;--ok:#067647;--okbg:#e4f5ec;--warn:#9a5b00;--warnbg:#fff1d6;--err:#b42318;--errbg:#fde8e6;--info:#1d4ed8;--infobg:#e6eeff;--sb:#fff;--bub:#dcf8c6;--chat:#efeae2;--sh:0 1px 2px rgba(15,23,42,.06)}
+[data-theme=dark]{--bg:#0d1218;--card:#151c25;--ink:#e6ecf2;--mut:#93a1b3;--line:#263241;--ok:#5fd394;--okbg:#10301f;--warn:#f2b45a;--warnbg:#38280e;--err:#f4908a;--errbg:#3a1613;--info:#8db3ff;--infobg:#15284d;--sb:#111820;--bub:#144d37;--chat:#0f1a17;--sh:none}
+*{box-sizing:border-box}html,body{margin:0}
+body{font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+h1{font-size:22px;margin:0}h2{font-size:16px;margin:0 0 12px}h3{font-size:15px;margin:0 0 8px}p{margin:0 0 10px}
+.mut{color:var(--mut)}.sm{font-size:12px}.sp{flex:1}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.end{justify-content:flex-end}.mt{margin-top:16px}
+:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+button,input,select,textarea{font:inherit;color:inherit}
+.btn{border:1px solid var(--line);background:var(--card);padding:7px 13px;border-radius:8px;cursor:pointer;font-weight:500}
+.btn:hover:not(:disabled){border-color:var(--pri)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.pri{background:var(--pri);color:var(--pri-ink);border-color:var(--pri)}.btn.dng{background:var(--err);color:#fff;border-color:var(--err)}
+.btn.ghost{border-color:transparent;background:transparent}.btn.xs{padding:3px 9px;font-size:12px}
+label{display:block;font-weight:500;margin:10px 0 4px}
+input,select,textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+input[type=checkbox],input[type=radio]{width:auto;margin-right:6px}
+.chk{display:flex;align-items:center;font-weight:400;margin:6px 0;cursor:pointer}
+.err{color:var(--err);font-size:12px;margin-top:4px}
+.app{display:flex;min-height:100vh}
+.sb{width:230px;background:var(--sb);border-right:1px solid var(--line);position:sticky;top:0;height:100vh;padding:14px 10px;flex-shrink:0}
+.sb a{display:flex;gap:10px;align-items:center;padding:9px 12px;border-radius:8px;color:var(--ink);text-decoration:none;margin-bottom:2px}
+.sb a:hover{background:var(--bg)}.sb a.on{background:var(--pri);color:var(--pri-ink)}
+.sb a.off{opacity:.55}
+.main{flex:1;min-width:0}
+.top{height:56px;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:0 20px;position:sticky;top:0;z-index:5}
+.logo{width:30px;height:30px;border-radius:8px;background:var(--pri);color:var(--pri-ink);display:grid;place-items:center;font-weight:700;overflow:hidden}.logo img{width:100%;height:100%;object-fit:cover}
+.badge{padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700;background:var(--warnbg);color:var(--warn)}
+.um{position:relative}.umm{position:absolute;right:0;top:38px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px;min-width:150px;box-shadow:0 8px 24px rgba(0,0,0,.15)}
+.umm button{display:block;width:100%;text-align:left}
+.content{padding:24px;max-width:1280px;margin:0 auto}
+.head{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;box-shadow:var(--sh);margin-bottom:16px}
+.grid{display:grid;gap:14px}.g6{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}.g2{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.kpi{padding:14px 16px}.kpi b{display:block;font-size:24px;line-height:1.2}.kpi span{color:var(--mut);font-size:12px}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:12px;color:var(--mut);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}tr:last-child td{border-bottom:0}
+.chip{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;background:var(--bg);color:var(--mut);white-space:nowrap}
+.c-ok{background:var(--okbg);color:var(--ok)}.c-warn{background:var(--warnbg);color:var(--warn)}.c-err{background:var(--errbg);color:var(--err)}.c-info{background:var(--infobg);color:var(--info)}
+.bar{height:8px;background:var(--bg);border-radius:99px;overflow:hidden;min-width:90px}.bar i{display:block;height:100%;background:var(--pri)}
+.pager{display:flex;justify-content:space-between;align-items:center;padding-top:12px;color:var(--mut)}
+.alert{padding:10px 14px;border-radius:8px;margin-bottom:8px;background:var(--infobg);color:var(--info)}.alert.warning{background:var(--warnbg);color:var(--warn)}.alert.error{background:var(--errbg);color:var(--err)}
+.sk{height:16px;border-radius:6px;background:linear-gradient(90deg,var(--line),var(--bg),var(--line));background-size:200% 100%;animation:sk 1.2s infinite;margin:10px 0}
+@keyframes sk{to{background-position:-200% 0}}@media(prefers-reduced-motion:reduce){.sk{animation:none}}
+.empty{text-align:center;padding:36px 16px;color:var(--mut)}
+.ov{position:fixed;inset:0;background:rgba(10,15,25,.55);display:grid;place-items:center;z-index:50;padding:16px}
+.dlg{background:var(--card);border-radius:14px;padding:22px;width:min(460px,100%);max-height:90vh;overflow:auto}.dlg.wide{width:min(860px,100%)}
+#toasts{position:fixed;right:16px;bottom:16px;z-index:60;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:8px;max-width:340px;box-shadow:0 6px 20px rgba(0,0,0,.25)}.toast.error{background:var(--err);color:#fff}.toast.ok{background:var(--ok);color:#fff}
+.steps{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}.steps span{padding:6px 14px;border-radius:99px;background:var(--card);border:1px solid var(--line);color:var(--mut)}.steps span.on{background:var(--pri);color:var(--pri-ink);border-color:var(--pri)}.steps span.done{color:var(--ok)}
+.tpl{border:2px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;background:var(--card)}.tpl.sel{border-color:var(--pri)}.tpl.dis{opacity:.5;cursor:not-allowed}
+.chat{background:var(--chat);border-radius:10px;padding:14px}
+.bub{background:var(--bub);border-radius:4px 12px 12px 12px;padding:8px 10px;max-width:290px;font-size:13px;white-space:pre-wrap;word-break:break-word;box-shadow:0 1px 1px rgba(0,0,0,.12)}
+.bub mark{background:transparent;color:inherit;font-weight:600;text-decoration:underline dotted}.bub .ft{color:var(--mut);font-size:11px;margin-top:6px}
+.bh{width:100%;border-radius:8px;margin-bottom:6px;display:block;max-height:160px;object-fit:cover}.bh.ph{background:var(--line);color:var(--mut);padding:30px 0;text-align:center;font-size:12px}
+.bb{background:var(--card);color:var(--info);text-align:center;border-radius:8px;padding:6px;margin-top:4px;font-size:13px;max-width:290px}
+.login{min-height:100vh;display:grid;place-items:center;padding:16px}.login .card{width:min(400px,100%);padding:28px}
+.dim{opacity:.5;pointer-events:none}.ribbon{position:relative}
+.ribbon .ov2{position:absolute;inset:0;display:grid;place-items:center;z-index:2}.ribbon .ov2 div{background:var(--card);border:1px solid var(--line);padding:14px 22px;border-radius:12px;font-weight:600;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.mb{display:none}
+@media(max-width:900px){.sb{position:fixed;left:-250px;z-index:40;transition:left .2s;box-shadow:0 0 24px rgba(0,0,0,.2)}.sb.open{left:0}.mb{display:inline-block}.content{padding:14px}}
+canvas{max-height:280px}
+</style>
+</head>
+<body>
+<div id="app"></div><div id="modal"></div><div id="toasts" aria-live="polite"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script>
+/* ===== CONFIG: change branding and switch features here, no layout edits needed ===== */
+const BRAND={brandName:'Renew',logoUrl:'',primaryColor:'#0f766e',supportEmail:'support@renew.example'};
+const FEATURES={automations:false,inbox:false,integrations:false};
+const API_URL=''; // optional: paste the Apps Script web app URL here, or enter it on the login screen
+/* ===================================================================================== */
+const TZ='Europe/Dublin';
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fdt=s=>{if(!s)return'—';const d=new Date(s);return isNaN(d)?'—':new Intl.DateTimeFormat('en-IE',{timeZone:TZ,dateStyle:'medium',timeStyle:'short'}).format(d)};
+const fnum=n=>new Intl.NumberFormat('en-IE').format(Number(n)||0);
+const feur=n=>new Intl.NumberFormat('en-IE',{style:'currency',currency:'EUR'}).format(Number(n)||0);
+const uid=()=>'r'+Date.now().toString(36)+Math.random().toString(36).slice(2,10);
+const lsGet=k=>{try{return localStorage.getItem(k)||''}catch(e){return''}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+const ssGet=k=>{try{return sessionStorage.getItem(k)||''}catch(e){return''}};
+const ssSet=(k,v)=>{try{v?sessionStorage.setItem(k,v):sessionStorage.removeItem(k)}catch(e){}};
+const S={token:ssGet('rn_tok'),demo:false};
+let main,timer=null,chart=null;
+const getUrl=()=>API_URL||lsGet('rn_url');
+const mkErr=(m,c)=>{const e=new Error(m);e.code=c;return e};
+
+async function api(action,payload){
+  const url=getUrl();if(!url)throw mkErr('Enter the web app URL first.','NOURL');
+  let r,j;
+  try{r=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,token:S.token,payload:payload||{}}),redirect:'follow'})}
+  catch(e){throw mkErr('Cannot reach the server. Check your connection and the web app URL.','NET')}
+  try{j=await r.json()}catch(e){throw mkErr('Unexpected response. Check the web app is deployed with access "Anyone".','BAD')}
+  if(!j.ok){if(j.code==='AUTH'&&action!=='login')doLogout(true);throw mkErr(j.error||'Error',j.code)}
+  return j.data;
+}
+function toast(m,t){const d=document.createElement('div');d.className='toast '+(t||'');d.textContent=m;$('#toasts').append(d);setTimeout(()=>d.remove(),t==='error'?6000:3500)}
+function openModal(html,wide){closeModal();const o=document.createElement('div');o.className='ov';o.innerHTML='<div class="dlg'+(wide?' wide':'')+'" role="dialog" aria-modal="true">'+html+'</div>';o.addEventListener('mousedown',e=>{if(e.target===o)closeModal()});$('#modal').append(o);const f=o.querySelector('input:not([type=checkbox]),select,textarea');if(f)f.focus();return o.firstElementChild}
+function closeModal(){$('#modal').innerHTML=''}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+/* body must be trusted HTML: escape dynamic values with esc() before passing */
+function confirmDlg(o){return new Promise(res=>{
+  const d=openModal('<h3>'+esc(o.title)+'</h3><p class="mut">'+(o.body||'')+'</p>'+(o.typed?'<label for="cf">Type <b>'+esc(o.typed)+'</b> to confirm</label><input id="cf" autocomplete="off">':'')+'<div class="row end mt"><button class="btn" id="cn">Cancel</button><button class="btn '+(o.danger?'dng':'pri')+'" id="co"'+(o.typed?' disabled':'')+'>'+esc(o.ok||'Confirm')+'</button></div>');
+  if(o.typed)$('#cf',d).oninput=e=>{$('#co',d).disabled=e.target.value!==o.typed};
+  $('#cn',d).onclick=()=>{closeModal();res(false)};$('#co',d).onclick=()=>{closeModal();res(true)};
+  $('#modal').firstElementChild.addEventListener('mousedown',e=>{if(e.target.classList.contains('ov'))res(false)});
+})}
+const skel=n=>Array.from({length:n||4},()=>'<div class="sk"></div>').join('');
+const CH={Draft:'',Scheduled:'c-info',Sending:'c-info',Paused:'c-warn',Completed:'c-ok',Failed:'c-err',Cancelled:'',APPROVED:'c-ok',PENDING:'c-warn',REJECTED:'c-err',PAUSED:'c-warn','OPT-OUT':'c-err',YES:'c-ok',NO:''};
+const chip=s=>'<span class="chip '+(CH[s]||'')+'">'+esc(s||'—')+'</span>';
+const empty=(t,s)=>'<div class="empty"><h3>'+esc(t)+'</h3><p>'+esc(s||'')+'</p></div>';
+const pager=r=>'<div class="pager"><span>'+fnum(r.total)+' total</span><span class="row"><button class="btn xs" data-pg="'+(r.page-1)+'"'+(r.page<=1?' disabled':'')+'>Previous</button>Page '+r.page+' of '+r.pages+'<button class="btn xs" data-pg="'+(r.page+1)+'"'+(r.page>=r.pages?' disabled':'')+'>Next</button></span></div>';
+const bindPager=(root,cb)=>root.querySelectorAll('[data-pg]').forEach(b=>b.onclick=()=>cb(+b.dataset.pg));
+const debounce=(f,ms)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>f(...a),ms)}};
+const btnBusy=async(b,fn)=>{b.disabled=true;try{return await fn()}finally{b.disabled=false}};
+
+/* Dublin wall-clock string "YYYY-MM-DDTHH:mm" -> UTC ISO */
+function tzOff(ts){const p=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}).formatToParts(new Date(ts)).map(x=>[x.type,x.value]));return Date.UTC(p.year,p.month-1,p.day,p.hour,p.minute,p.second)-ts}
+function dublinToISO(v){const[d,t]=v.split('T'),[y,m,da]=d.split('-').map(Number),[hh,mm]=t.split(':').map(Number);const base=Date.UTC(y,m-1,da,hh,mm);let u=base;for(let i=0;i<2;i++)u=base-tzOff(u);return new Date(u).toISOString()}
+
+/* ---------- theme / branding ---------- */
+function applyTheme(t){document.documentElement.dataset.theme=t;lsSet('rn_theme',t)}
+applyTheme(lsGet('rn_theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'));
+document.documentElement.style.setProperty('--pri',BRAND.primaryColor);
+document.title=BRAND.brandName+' Broadcast';
+const logoHtml=()=>'<span class="logo">'+(/^https:\/\//.test(BRAND.logoUrl)?'<img src="'+esc(BRAND.logoUrl)+'" alt="">':esc(BRAND.brandName.charAt(0)))+'</span>';
+
+/* ---------- auth ---------- */
+function loginView(msg){
+  $('#app').innerHTML='<div class="login"><form class="card" id="lf"><div class="row" style="margin-bottom:14px">'+logoHtml()+'<h1>'+esc(BRAND.brandName)+'</h1></div><p class="mut">Sign in to manage WhatsApp campaigns.</p>'+
+  (API_URL?'':'<label for="lu">Web app URL</label><input id="lu" type="url" placeholder="https://script.google.com/macros/s/…/exec" value="'+esc(lsGet('rn_url'))+'">')+
+  '<label for="lp">Password</label><input id="lp" type="password" autocomplete="current-password" required><div class="err" id="le" role="alert">'+esc(msg||'')+'</div><button class="btn pri" style="width:100%;margin-top:14px" id="lb">Sign in</button><p class="mut sm mt">Need help? <a href="mailto:'+esc(BRAND.supportEmail)+'">'+esc(BRAND.supportEmail)+'</a></p></form></div>';
+  $('#lf').onsubmit=async e=>{e.preventDefault();const b=$('#lb');
+    if(!API_URL){const u=$('#lu').value.trim();if(!/^https:\/\/script\.google(usercontent)?\.com\//.test(u)){$('#le').textContent='Enter a valid Apps Script web app URL (https://script.google.com/…/exec).';return}lsSet('rn_url',u)}
+    b.disabled=true;b.textContent='Signing in…';$('#le').textContent='';
+    try{const d=await api('login',{password:$('#lp').value});S.token=d.token;ssSet('rn_tok',d.token);boot()}
+    catch(er){$('#le').textContent=er.message;b.disabled=false;b.textContent='Sign in';$('#lp').value=''}};
+}
+function doLogout(expired){if(!expired&&S.token)api('logout').catch(()=>{});S.token='';ssSet('rn_tok','');stopTimer();closeModal();loginView(expired?'Your session has expired. Please sign in again.':'')}
+
+/* ---------- shell + router ---------- */
+const NAV=[['dashboard','Dashboard','▦'],['campaigns','Campaigns','✉'],['contacts','Contacts','☺'],['templates','Templates','❏'],['replies','Replies','↩'],['optouts','Opt-outs','⊘'],['automations','Automations','⚡'],['inbox','Inbox','✎','inbox'],['integrations','Integrations','⇄','integrations'],['settings','Settings','⚙'],['activity','Activity log','☰']];
+function shell(){
+  $('#app').innerHTML='<div class="app"><aside class="sb" id="sb"><nav aria-label="Main">'+NAV.filter(n=>!n[3]||FEATURES[n[3]]).map(n=>'<a href="#'+n[0]+'" data-n="'+n[0]+'"><span aria-hidden="true">'+n[2]+'</span>'+n[1]+(n[0]==='automations'&&!FEATURES.automations?' <span class="chip sm" style="margin-left:auto">Soon</span>':'')+'</a>').join('')+'</nav></aside>'+
+  '<div class="main"><header class="top"><button class="btn ghost mb" id="bg" aria-label="Open menu">☰</button>'+logoHtml()+'<b>'+esc(BRAND.brandName)+'</b><span class="badge" id="db" hidden>DEMO</span><span class="sp"></span><button class="btn ghost" id="th" aria-label="Toggle dark mode">◐</button><div class="um"><button class="btn" id="ub" aria-haspopup="true">Admin ▾</button><div class="umm" id="um" hidden><button class="btn ghost" id="lo">Log out</button></div></div></header><main class="content" id="main"></main></div></div>';
+  main=$('#main');
+  $('#bg').onclick=()=>$('#sb').classList.toggle('open');
+  $('#th').onclick=()=>applyTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+  $('#ub').onclick=()=>{$('#um').hidden=!$('#um').hidden};$('#lo').onclick=()=>doLogout(false);
+  $('#sb').onclick=e=>{if(e.target.closest('a'))$('#sb').classList.remove('open')};
+}
+function setDemo(v){S.demo=!!v;const b=$('#db');if(b)b.hidden=!S.demo}
+function stopTimer(){if(timer){clearInterval(timer);timer=null}if(chart){chart.destroy();chart=null}}
+async function boot(){shell();window.onhashchange=render;try{const s=await api('getSettings');setDemo(s.settings.demo_mode)}catch(e){if(e.code==='AUTH')return}render()}
+async function render(){
+  stopTimer();const id=(location.hash||'#dashboard').slice(1).split('?')[0];const pg=PAGES[id]||PAGES.dashboard;
+  document.querySelectorAll('.sb a').forEach(a=>a.classList.toggle('on',a.dataset.n===id));
+  main.innerHTML=skel(5);
+  try{await pg()}catch(e){if(e.code==='AUTH')return;main.innerHTML='<div class="card empty"><h3>Something went wrong</h3><p>'+esc(e.message)+'</p><button class="btn pri" id="rt">Try again</button></div>';$('#rt').onclick=render}
+}
+const head=(t,right)=>'<div class="head"><h1>'+esc(t)+'</h1><span class="sp"></span>'+(right||'')+'</div>';
+
+/* ---------- WhatsApp-style preview ---------- */
+function bubble(t,vals,hdr){
+  const c=t.components||[],H=c.find(x=>x.type==='HEADER'),B=c.find(x=>x.type==='BODY'),F=c.find(x=>x.type==='FOOTER'),BT=c.find(x=>x.type==='BUTTONS');
+  let h='';
+  if(H&&H.format==='IMAGE')h+=/^https:\/\//i.test(hdr||'')?'<img class="bh" src="'+esc(hdr)+'" alt="" referrerpolicy="no-referrer">':'<div class="bh ph">Image header</div>';
+  else if(H&&H.text)h+='<b>'+esc(H.text)+'</b><br>';
+  const body=esc(B?B.text:'').replace(/\{\{(\d+)\}\}/g,(m,n)=>'<mark>'+esc(vals&&vals[n-1]?vals[n-1]:'{{'+n+'}}')+'</mark>');
+  return '<div class="chat"><div class="bub">'+h+body+(F&&F.text?'<div class="ft">'+esc(F.text)+'</div>':'')+'</div>'+((BT&&BT.buttons)||[]).map(b=>'<div class="bb">'+(b.type==='URL'?'↗ ':'')+esc(b.text)+'</div>').join('')+'</div>';
+}
+
+/* ================= PAGES ================= */
+const PAGES={};
+
+/* ---- Dashboard ---- */
+PAGES.dashboard=async()=>{
+  const d=await api('getDashboardStats');setDemo(d.demo_mode);const k=d.kpis;
+  const cards=[['Sent today',fnum(k.sent_today)+' / '+fnum(d.daily_limit)],['Delivered',fnum(k.delivered)],['Read',fnum(k.read)],['Failed',fnum(k.failed)],['Replies',fnum(k.replies)],['Opt-outs',fnum(k.optouts)]];
+  const pct=Math.min(100,Math.round(d.limit_used/Math.max(d.daily_limit,1)*100));
+  main.innerHTML=head('Dashboard','<a class="btn pri" href="#new">New campaign</a>')+
+  d.warnings.map(w=>'<div class="alert '+esc(w.level)+'" role="status">'+esc(w.text)+'</div>').join('')+
+  '<div class="grid g6">'+cards.map(c=>'<div class="card kpi"><span>'+c[0]+'</span><b>'+c[1]+'</b></div>').join('')+'</div>'+
+  '<div class="card"><div class="row"><b>Daily recipient limit</b><span class="sp"></span><span class="mut">'+fnum(d.limit_used)+' of '+fnum(d.daily_limit)+' unique recipients in the last 24 hours</span></div><div class="bar" style="margin-top:8px"><i style="width:'+pct+'%"></i></div>'+(d.quality?'<p class="mut sm mt">Number quality: '+chip(d.quality.rating)+' '+esc(d.quality.tier)+'</p>':'')+'</div>'+
+  '<div class="card"><h2>Delivery funnel, last 7 days</h2><canvas id="ch" aria-label="Delivery funnel chart" role="img"></canvas></div>'+
+  '<div class="card"><h2>Recent campaigns</h2>'+(d.recent_campaigns.length?'<div class="tw"><table><thead><tr><th>Name</th><th>Status</th><th>Progress</th><th>Created</th></tr></thead><tbody>'+d.recent_campaigns.map(c=>'<tr><td>'+esc(c.name)+'</td><td>'+chip(c.status)+'</td><td><div class="bar"><i style="width:'+c.progress+'%"></i></div></td><td>'+fdt(c.created_at)+'</td></tr>').join('')+'</tbody></table></div>':empty('No campaigns yet','Create your first campaign to see results here.'))+'</div>';
+  const cs=getComputedStyle(document.documentElement),col=n=>cs.getPropertyValue(n).trim();
+  chart=new Chart($('#ch'),{type:'bar',data:{labels:d.funnel.map(f=>f.date.slice(5)),datasets:[['Sent','sent',col('--info')],['Delivered','delivered',col('--pri')],['Read','read',col('--ok')],['Failed','failed',col('--err')]].map(x=>({label:x[0],data:d.funnel.map(f=>f[x[1]]),backgroundColor:x[2],borderRadius:4}))},options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,ticks:{precision:0,color:col('--mut')},grid:{color:col('--line')}},x:{ticks:{color:col('--mut')},grid:{display:false}}},plugins:{legend:{labels:{color:col('--ink')}}}}});
+  $('#ch').parentElement.style.height='320px';
+};
+
+/* ---- Campaigns ---- */
+PAGES.campaigns=async()=>{
+  let q={page:1,page_size:20,status:'',search:''};
+  main.innerHTML=head('Campaigns','<a class="btn pri" href="#new">New campaign</a>')+'<div class="card"><div class="row" style="margin-bottom:12px"><input id="cs" placeholder="Search campaigns" aria-label="Search campaigns" style="max-width:260px"><select id="cf" aria-label="Filter by status" style="max-width:180px"><option value="">All statuses</option>'+['Draft','Scheduled','Sending','Paused','Completed','Failed','Cancelled'].map(s=>'<option>'+s+'</option>').join('')+'</select></div><div id="ct"></div></div>';
+  const load=async(silent)=>{if(!silent)$('#ct').innerHTML=skel(5);const r=await api('listCampaigns',q);
+    $('#ct').innerHTML=r.items.length?'<div class="tw"><table><thead><tr><th>Campaign</th><th>Status</th><th>Progress</th><th>Sent / Delivered / Read / Failed</th><th>Schedule</th><th>Actions</th></tr></thead><tbody>'+r.items.map(c=>{
+      const a=[];if(c.status==='Sending'||c.status==='Scheduled')a.push(['pause','Pause']);if(c.status==='Paused')a.push(['resume','Resume']);if(c.status==='Draft')a.push(['resume','Launch']);
+      a.push(['dup','Duplicate']);if(['Draft','Scheduled','Sending','Paused'].includes(c.status))a.push(['cancel','Cancel']);
+      return '<tr><td><b>'+esc(c.name)+'</b><div class="mut sm">'+esc(c.template_name)+' · '+esc(c.category)+(c.demo?' · demo':'')+'</div></td><td>'+chip(c.status)+(c.review?'<div class="sm err">'+c.review+' need review</div>':'')+'</td><td><div class="bar"><i style="width:'+c.progress+'%"></i></div><span class="mut sm">'+c.progress+'% of '+fnum(c.total)+'</span></td><td>'+fnum(c.sent)+' / '+fnum(c.delivered)+' / '+fnum(c.read)+' / '+fnum(c.failed)+'</td><td>'+(c.scheduled_at?fdt(c.scheduled_at):'Immediate')+'</td><td class="row">'+a.map(x=>'<button class="btn xs" data-act="'+x[0]+'" data-id="'+esc(c.campaign_id)+'" data-name="'+esc(c.name)+'">'+x[1]+'</button>').join('')+'</td></tr>'}).join('')+'</tbody></table></div>'+pager(r):empty('No campaigns found','Create a campaign to start sending.');
+    bindPager($('#ct'),p=>{q.page=p;load()})};
+  $('#cs').oninput=debounce(e=>{q.search=e.target.value;q.page=1;load()},300);$('#cf').onchange=e=>{q.status=e.target.value;q.page=1;load()};
+  $('#ct').onclick=async e=>{const b=e.target.closest('[data-act]');if(!b)return;const id=b.dataset.id,nm=esc(b.dataset.name);
+    try{
+      if(b.dataset.act==='pause'){await btnBusy(b,()=>api('pauseCampaign',{campaign_id:id}));toast('Campaign paused','ok')}
+      else if(b.dataset.act==='dup'){await btnBusy(b,()=>api('duplicateCampaign',{campaign_id:id}));toast('Duplicate saved as draft','ok')}
+      else if(b.dataset.act==='cancel'){if(!await confirmDlg({title:'Cancel campaign?',body:'All queued messages in <b>'+nm+'</b> will stop. Messages already sent stay as they are.',ok:'Cancel campaign',danger:1}))return;await api('cancelCampaign',{campaign_id:id});toast('Campaign cancelled','ok')}
+      else if(b.dataset.act==='resume'){
+        const isDraft=b.textContent==='Launch';
+        if(isDraft){if(!await confirmDlg({title:'Launch campaign?',body:'By launching <b>'+nm+'</b> you confirm every recipient has opted in to receive these messages.',ok:'Launch now'}))return}
+        await btnBusy(b,()=>api('resumeCampaign',{campaign_id:id,confirm_opt_in:true}));toast(isDraft?'Campaign launched':'Campaign resumed','ok')}
+      load(true)}catch(er){toast(er.message,'error')}};
+  await load(true);timer=setInterval(()=>load(true).catch(()=>{}),15000);
+};
+
+/* ---- New campaign wizard ---- */
+const VARS=[['first_name','First name'],['last_name','Last name'],['full_name','Full name'],['email','Email'],['custom1','Custom 1'],['custom2','Custom 2'],['custom3','Custom 3'],['tags','Tags']];
+let W;
+PAGES.new=async()=>{
+  const[tp,se,ct]=await Promise.all([api('listTemplates'),api('getSettings'),api('listContacts',{page_size:1})]);
+  const s=se.settings;
+  W={step:1,req:uid(),name:'',filter:{mode:'all',tags:[],consent_source:''},tpl:null,map:[],fb:[],fx:[],hdr:'',btn:'',mode:'now',at:'',ok:false,tpls:tp.templates,rates:{marketing:s.rate_marketing,utility:s.rate_utility,authentication:s.rate_authentication},tags:ct.available_tags||[],srcs:ct.available_sources||[],aud:null,rate:null,limit:s.daily_limit};
+  W.filter.consent_source=W.srcs[0]||'';
+  await refreshAud();drawW();
+};
+async function refreshAud(){
+  const f=W.filter;const filter=f.mode==='tags'?{mode:'tags',tags:f.tags}:f.mode==='source'?{mode:'source',consent_source:f.consent_source}:{mode:'all'};
+  W.aud=await api('previewAudience',{filter,category:W.tpl?String(W.tpl.category).toLowerCase():'marketing'});W.fobj=filter;
+}
+function wVal(i){
+  const c=W.aud&&W.aud.sample&&W.aud.sample[0]||{},t=W.map[i];if(!t)return'';
+  if(t==='text')return W.fx[i]||'';
+  const v=t==='full_name'?((c.first_name||'')+' '+(c.last_name||'')).trim():(c[t]||'');
+  return v||W.fb[i]||(t==='first_name'||t==='full_name'?'there':'-');
+}
+const wVals=()=>W.tpl?Array.from({length:W.tpl.body_vars},(_,i)=>wVal(i)):[];
+function drawW(){
+  const st=['Audience','Template','Schedule','Review'];
+  main.innerHTML=head('New campaign','<a class="btn" href="#campaigns">Cancel</a>')+'<div class="steps">'+st.map((s,i)=>'<span class="'+(W.step===i+1?'on':W.step>i+1?'done':'')+'">'+(W.step>i+1?'✓ ':'')+(i+1)+'. '+s+'</span>').join('')+'</div><div id="ws"></div><div class="row end mt"><button class="btn" id="wb"'+(W.step===1?' hidden':'')+'>Back</button><span class="sp"></span>'+(W.step===4?'<button class="btn" id="wd">Save as draft</button><button class="btn pri" id="wn">'+(W.mode==='later'?'Schedule campaign':'Send campaign')+'</button>':'<button class="btn pri" id="wn">Continue</button>')+'</div>';
+  [wStep1,wStep2,wStep3,wStep4][W.step-1]();
+  $('#wb').onclick=()=>{W.step--;drawW()};
+  $('#wn').onclick=wNext;if($('#wd'))$('#wd').onclick=()=>wSubmit(true);
+}
+function wStep1(){
+  const a=W.aud,f=W.filter;
+  $('#ws').innerHTML='<div class="card"><h2>Who should receive this?</h2><label class="chk"><input type="radio" name="m" value="all"'+(f.mode==='all'?' checked':'')+'>All contacts</label><label class="chk"><input type="radio" name="m" value="tags"'+(f.mode==='tags'?' checked':'')+'>Contacts with tags</label>'+
+  (f.mode==='tags'?'<div class="row" style="margin:4px 0 8px 22px">'+(W.tags.length?W.tags.map(t=>'<label class="chk"><input type="checkbox" data-tag="'+esc(t)+'"'+(f.tags.includes(t)?' checked':'')+'>'+esc(t)+'</label>').join(''):'<span class="mut">No tags yet.</span>')+'</div>':'')+
+  '<label class="chk"><input type="radio" name="m" value="source"'+(f.mode==='source'?' checked':'')+'>Contacts by consent source</label>'+
+  (f.mode==='source'?'<select id="ss" aria-label="Consent source" style="max-width:300px;margin-left:22px">'+W.srcs.map(s=>'<option'+(s===f.consent_source?' selected':'')+'>'+esc(s)+'</option>').join('')+'</select>':'')+'</div>'+
+  '<div class="grid g6"><div class="card kpi"><span>Selected</span><b>'+fnum(a.total)+'</b></div><div class="card kpi"><span>Will receive</span><b style="color:var(--ok)">'+fnum(a.eligible)+'</b></div><div class="card kpi"><span>Opted out (suppressed)</span><b>'+fnum(a.suppressed)+'</b></div><div class="card kpi"><span>Not opted in</span><b>'+fnum(a.not_opted_in)+'</b></div><div class="card kpi"><span>Invalid numbers</span><b>'+fnum(a.invalid)+'</b></div><div class="card kpi"><span>Duplicates</span><b>'+fnum(a.duplicate)+'</b></div></div>'+(a.eligible===0?'<div class="alert warning">No eligible recipients in this selection.</div>':'');
+  document.querySelectorAll('[name=m]').forEach(r=>r.onchange=async()=>{f.mode=r.value;await rf()});
+  document.querySelectorAll('[data-tag]').forEach(c=>c.onchange=async()=>{f.tags=[...document.querySelectorAll('[data-tag]:checked')].map(x=>x.dataset.tag);await rf()});
+  if($('#ss'))$('#ss').onchange=async e=>{f.consent_source=e.target.value;await rf()};
+  async function rf(){try{await refreshAud();drawW()}catch(e){toast(e.message,'error')}}
+}
+function wStep2(){
+  const t=W.tpl;
+  $('#ws').innerHTML='<div class="card"><label for="wn2">Campaign name</label><input id="wn2" maxlength="100" value="'+esc(W.name)+'" placeholder="e.g. Spring offer, week 1"></div><div class="card"><h2>Choose a template</h2>'+(W.tpls.length?'<div class="grid g3">'+W.tpls.map((x,i)=>'<div class="tpl'+(t&&t.name===x.name&&t.language===x.language?' sel':'')+(x.status!=='APPROVED'?' dis':'')+'" data-i="'+i+'" tabindex="0" role="button" aria-disabled="'+(x.status!=='APPROVED')+'"><div class="row"><b>'+esc(x.name)+'</b><span class="sp"></span>'+chip(x.status)+'</div><div class="mut sm" style="margin-bottom:8px">'+esc(x.category)+' · '+esc(x.language)+'</div>'+bubble(x,[],'')+'</div>').join('')+'</div>':empty('No templates','Create templates in Meta WhatsApp Manager, then refresh on the Templates page.'))+'</div>'+
+  (t?'<div class="grid g2"><div class="card"><h2>Fill in the template</h2>'+
+  (t.header_format==='IMAGE'?'<label for="wh">Header image URL (public https)</label><input id="wh" value="'+esc(W.hdr)+'" placeholder="https://…">':'')+
+  Array.from({length:t.body_vars},(_,i)=>'<label for="wm'+i+'">Variable {{'+(i+1)+'}}</label><div class="row" style="flex-wrap:nowrap"><select id="wm'+i+'" data-m="'+i+'">'+VARS.map(v=>'<option value="'+v[0]+'"'+(W.map[i]===v[0]?' selected':'')+'>'+v[1]+'</option>').join('')+'<option value="text"'+(W.map[i]==='text'?' selected':'')+'>Fixed text</option></select><input data-x="'+i+'" aria-label="'+(W.map[i]==='text'?'Fixed text':'Fallback if empty')+' for variable '+(i+1)+'" placeholder="'+(W.map[i]==='text'?'Fixed text':'Fallback if empty')+'" value="'+esc(W.map[i]==='text'?W.fx[i]:W.fb[i])+'"></div>').join('')+
+  (t.url_button_index>=0?'<label for="wbv">Button URL variable</label><select id="wbv">'+VARS.map(v=>'<option value="'+v[0]+'"'+(W.btn===v[0]?' selected':'')+'>'+v[1]+'</option>').join('')+'</select>':'')+
+  (!t.body_vars&&t.header_format!=='IMAGE'&&t.url_button_index<0?'<p class="mut">This template has no variables to fill in.</p>':'')+'</div><div class="card"><h2>Preview</h2><div id="wp"></div><p class="mut sm mt">Preview uses the first recipient in your audience.</p></div></div>':'');
+  const pv=()=>{if(t)$('#wp').innerHTML=bubble(t,wVals(),W.hdr)};pv();
+  $('#wn2').oninput=e=>W.name=e.target.value;
+  document.querySelectorAll('.tpl').forEach(el=>{const pick=async()=>{const x=W.tpls[+el.dataset.i];if(x.status!=='APPROVED')return toast('Only approved templates can be sent.','error');W.tpl=x;W.map=Array.from({length:x.body_vars},(_,i)=>i===0?'first_name':'custom'+Math.min(i,3));W.fb=[];W.fx=[];W.hdr='';W.btn=x.url_button_index>=0?'first_name':'';try{await refreshAud()}catch(e){}drawW()};el.onclick=pick;el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick()}}});
+  document.querySelectorAll('[data-m]').forEach(s=>s.onchange=()=>{W.map[+s.dataset.m]=s.value;drawW()});
+  document.querySelectorAll('[data-x]').forEach(i=>i.oninput=()=>{const n=+i.dataset.x;if(W.map[n]==='text')W.fx[n]=i.value;else W.fb[n]=i.value;pv()});
+  if($('#wh'))$('#wh').oninput=e=>{W.hdr=e.target.value.trim();pv()};
+  if($('#wbv'))$('#wbv').onchange=e=>W.btn=e.target.value;
+}
+function wStep3(){
+  $('#ws').innerHTML='<div class="card"><h2>When should it send?</h2><label class="chk"><input type="radio" name="sm" value="now"'+(W.mode==='now'?' checked':'')+'>Send now</label><label class="chk"><input type="radio" name="sm" value="later"'+(W.mode==='later'?' checked':'')+'>Schedule for later</label>'+(W.mode==='later'?'<label for="wa">Date and time (Dublin time)</label><input id="wa" type="datetime-local" style="max-width:260px" value="'+esc(W.at)+'">':'')+'<p class="mut sm mt">Messages are sent in the background, so you can close this page after sending.</p></div>';
+  document.querySelectorAll('[name=sm]').forEach(r=>r.onchange=()=>{W.mode=r.value;drawW()});
+  if($('#wa'))$('#wa').onchange=e=>W.at=e.target.value;
+}
+function wStep4(){
+  const a=W.aud,cat=String(W.tpl.category).toLowerCase();if(W.rate==null||W.rateCat!==cat){W.rate=W.rates[cat]||0;W.rateCat=cat}
+  const over=a.eligible>a.remaining_today,days=a.estimated_days;
+  $('#ws').innerHTML='<div class="grid g2"><div class="card"><h2>Summary</h2><table><tbody><tr><td class="mut">Campaign</td><td><b>'+esc(W.name)+'</b></td></tr><tr><td class="mut">Template</td><td>'+esc(W.tpl.name)+' ('+esc(W.tpl.language)+') '+chip(cat)+'</td></tr><tr><td class="mut">Recipients</td><td><b>'+fnum(a.eligible)+' messages</b></td></tr><tr><td class="mut">Excluded</td><td>'+fnum(a.suppressed+a.not_opted_in+a.invalid+a.duplicate)+'</td></tr><tr><td class="mut">Sends</td><td>'+(W.mode==='later'?fdt(dublinToISO(W.at)):'Immediately')+'</td></tr><tr><td class="mut"><label for="wr" style="margin:0">Rate per message (EUR)</label></td><td><input id="wr" type="number" min="0" step="0.001" value="'+W.rate+'" style="max-width:110px"></td></tr><tr><td class="mut">Estimated Meta cost</td><td><b id="wc">'+feur(a.eligible*W.rate)+'</b></td></tr></tbody></table></div><div class="card"><h2>Preview</h2>'+bubble(W.tpl,wVals(),W.hdr)+'</div></div>'+
+  (over?'<div class="alert warning">Your daily limit is '+fnum(a.daily_limit)+' unique recipients per 24 hours and '+fnum(a.remaining_today)+' remain today. This campaign needs about <b>'+days+' day'+(days===1?'':'s')+'</b>; the rest continues automatically.</div>':'')+
+  '<div class="card"><label class="chk"><input type="checkbox" id="wk"'+(W.ok?' checked':'')+'>I confirm every recipient has given consent to receive these WhatsApp messages and that opted-out numbers are excluded.</label></div>';
+  $('#wr').oninput=e=>{W.rate=Math.max(Number(e.target.value)||0,0);$('#wc').textContent=feur(a.eligible*W.rate)};
+  $('#wk').onchange=e=>W.ok=e.target.checked;
+}
+async function wNext(){
+  const b=$('#wn');
+  if(W.step===1){if(!W.aud.eligible)return toast('Choose an audience with at least one eligible recipient.','error')}
+  if(W.step===2){
+    if(!W.name.trim())return toast('Give the campaign a name.','error');if(!W.tpl)return toast('Choose a template.','error');
+    if(W.tpl.header_format==='IMAGE'&&!/^https:\/\/\S+$/i.test(W.hdr))return toast('Enter a public https image URL for the header.','error');
+    for(let i=0;i<W.tpl.body_vars;i++)if(W.map[i]==='text'&&!(W.fx[i]||'').trim())return toast('Enter the fixed text for variable {{'+(i+1)+'}}.','error');
+    try{await btnBusy(b,refreshAud)}catch(e){return toast(e.message,'error')}}
+  if(W.step===3&&W.mode==='later'){if(!W.at)return toast('Pick a date and time.','error');if(new Date(dublinToISO(W.at))<=new Date(Date.now()+60000))return toast('Pick a time in the future.','error')}
+  if(W.step===4)return wSubmit(false);
+  W.step++;drawW();
+}
+async function wSubmit(draft){
+  if(!draft&&!W.ok)return toast('Please tick the consent confirmation.','error');
+  if(!draft&&!await confirmDlg({title:W.mode==='later'?'Schedule this campaign?':'Send this campaign?',body:'<b>'+fnum(W.aud.eligible)+'</b> messages using <b>'+esc(W.tpl.name)+'</b>, estimated cost <b>'+feur(W.aud.eligible*W.rate)+'</b>. Sent messages cannot be recalled.',ok:W.mode==='later'?'Schedule':'Send now'}))return;
+  const p={name:W.name.trim(),template_name:W.tpl.name,language:W.tpl.language,variable_map:W.map.map((t,i)=>t==='text'?'text:'+W.fx[i]:t),fallbacks:W.map.map((t,i)=>W.fb[i]||''),header_image_url:W.hdr,button_var:W.btn,filter:W.fobj,send_at:W.mode==='later'?dublinToISO(W.at):'',confirm_opt_in:!draft,draft:draft,request_id:W.req+(draft?'d':'')};
+  try{const r=await api('createCampaign',p);toast(draft?'Draft saved':(r.duplicate_request?'Campaign already created':(W.mode==='later'?'Campaign scheduled':'Campaign is sending')),'ok');location.hash='#campaigns'}catch(e){toast(e.message,'error')}
+}
+
+/* ---- Contacts ---- */
+PAGES.contacts=async()=>{
+  let q={page:1,page_size:50,search:'',opted_in:'',tag:'',consent_source:''},sel=new Set();
+  main.innerHTML=head('Contacts','<button class="btn" id="ce">Export CSV</button><button class="btn" id="cg">Erase number</button><button class="btn" id="ca">Add contact</button><button class="btn pri" id="ci">Import</button>')+'<div class="card"><div class="row" style="margin-bottom:12px"><input id="cs" placeholder="Search name, number, email" aria-label="Search contacts" style="max-width:260px"><select id="co" aria-label="Opt-in filter" style="max-width:150px"><option value="">All opt-in</option><option>YES</option><option>NO</option></select><select id="ct2" aria-label="Tag filter" style="max-width:160px"></select><select id="cr" aria-label="Consent source filter" style="max-width:190px"></select><span class="sp"></span><button class="btn dng xs" id="cd" hidden>Delete selected</button></div><div id="cl"></div></div>';
+  let first=true;
+  const load=async()=>{$('#cl').innerHTML=skel(6);const r=await api('listContacts',q);
+    if(first){first=false;$('#ct2').innerHTML='<option value="">All tags</option>'+r.available_tags.map(t=>'<option>'+esc(t)+'</option>').join('');$('#cr').innerHTML='<option value="">All sources</option>'+r.available_sources.map(t=>'<option>'+esc(t)+'</option>').join('')}
+    $('#cl').innerHTML=r.items.length?'<div class="tw"><table><thead><tr><th><input type="checkbox" id="sa" aria-label="Select all on page"></th><th>Phone</th><th>Name</th><th>Email</th><th>Tags</th><th>Opted in</th><th>Consent source</th><th>Consent date</th></tr></thead><tbody>'+r.items.map(c=>'<tr><td><input type="checkbox" data-id="'+esc(c.contact_id)+'" aria-label="Select contact"'+(sel.has(c.contact_id)?' checked':'')+'></td><td>'+esc(c.phone)+'</td><td>'+esc((c.first_name+' '+c.last_name).trim()||'—')+'</td><td>'+esc(c.email||'—')+'</td><td>'+esc(c.tags||'—')+'</td><td>'+chip(c.opted_in)+'</td><td>'+esc(c.consent_source)+'</td><td>'+esc((c.consent_date||'').slice(0,10))+'</td></tr>').join('')+'</tbody></table></div>'+pager(r):empty('No contacts','Import a CSV or add a contact manually.');
+    bindPager($('#cl'),p=>{q.page=p;load()});
+    const upd=()=>{$('#cd').hidden=!sel.size;$('#cd').textContent='Delete '+sel.size+' selected'};
+    document.querySelectorAll('[data-id]').forEach(c=>c.onchange=()=>{c.checked?sel.add(c.dataset.id):sel.delete(c.dataset.id);upd()});
+    if($('#sa'))$('#sa').onchange=e=>document.querySelectorAll('[data-id]').forEach(c=>{c.checked=e.target.checked;e.target.checked?sel.add(c.dataset.id):sel.delete(c.dataset.id);upd()});upd()};
+  $('#cs').oninput=debounce(e=>{q.search=e.target.value;q.page=1;load()},300);
+  [['#co','opted_in'],['#ct2','tag'],['#cr','consent_source']].forEach(x=>$(x[0]).onchange=e=>{q[x[1]]=e.target.value;q.page=1;load()});
+  $('#cd').onclick=async()=>{if(!await confirmDlg({title:'Delete contacts?',body:'<b>'+sel.size+'</b> contact(s) and their queued messages will be removed. This cannot be undone.',ok:'Delete',danger:1}))return;try{const r=await api('deleteContacts',{contact_ids:[...sel]});sel.clear();toast(r.deleted+' contact(s) deleted','ok');load()}catch(e){toast(e.message,'error')}};
+  $('#ce').onclick=async e=>{try{const r=await btnBusy(e.target,()=>api('exportContacts'));const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([r.csv],{type:'text/csv'}));a.download=r.filename;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);toast('Exported '+r.count+' contacts','ok')}catch(er){toast(er.message,'error')}};
+  $('#ca').onclick=()=>contactForm(load);$('#ci').onclick=()=>importWizard(load);
+  $('#cg').onclick=()=>{const d=openModal('<h3>Erase all data for a number</h3><p class="mut">Removes the number from Contacts, Messages and Replies (GDPR erasure). The opt-out list is never touched.</p><label for="ep">Phone number</label><input id="ep" placeholder="+353 87 123 4567"><div class="row end mt"><button class="btn" id="x1">Cancel</button><button class="btn dng" id="x2">Erase</button></div>');
+    $('#x1',d).onclick=closeModal;$('#x2',d).onclick=async()=>{const ph=$('#ep',d).value;closeModal();if(!await confirmDlg({title:'Erase this number?',body:'All stored data for <b>'+esc(ph)+'</b> will be deleted.',ok:'Erase',danger:1,typed:'ERASE'}))return;try{const r=await api('eraseNumber',{phone:ph});toast(r.erased_rows+' row(s) erased','ok');load()}catch(e){toast(e.message,'error')}}};
+  await load();
+};
+function contactForm(done){
+  const d=openModal('<h3>Add contact</h3><form id="af"><label for="a1">Phone number *</label><input id="a1" required placeholder="087 123 4567 or +353…"><div class="grid g2"><div><label for="a2">First name</label><input id="a2"></div><div><label for="a3">Last name</label><input id="a3"></div></div><label for="a4">Email</label><input id="a4" type="email"><label for="a5">Tags (comma separated)</label><input id="a5"><div class="grid g2"><div><label for="a6">Consent source *</label><input id="a6" required placeholder="e.g. Website form"></div><div><label for="a7">Consent date *</label><input id="a7" type="date" required></div></div><div class="err" id="ae" role="alert"></div><div class="row end mt"><button type="button" class="btn" id="ac">Cancel</button><button class="btn pri">Add contact</button></div></form>');
+  $('#ac',d).onclick=closeModal;
+  $('#af',d).onsubmit=async e=>{e.preventDefault();try{await api('addContact',{phone:$('#a1',d).value,first_name:$('#a2',d).value,last_name:$('#a3',d).value,email:$('#a4',d).value,tags:$('#a5',d).value,consent_source:$('#a6',d).value,consent_date:$('#a7',d).value,opted_in:'YES'});closeModal();toast('Contact added','ok');done()}catch(er){$('#ae',d).textContent=er.message}};
+}
+const IFIELDS=[['phone','Phone *',['phone','mobile','phonenumber','whatsapp','number']],['first_name','First name',['firstname','first','name']],['last_name','Last name',['lastname','surname']],['email','Email',['email']],['custom1','Custom 1',['custom1']],['custom2','Custom 2',['custom2']],['custom3','Custom 3',['custom3']],['tags','Tags',['tags','tag']],['opted_in','Opted in (YES/NO)',['optedin','optin']],['consent_source','Consent source *',['consentsource','source']],['consent_date','Consent date *',['consentdate','date']]];
+function importWizard(done){
+  const IM={rows:[],hdr:[],map:{},fx:{},upd:false};
+  const d=openModal('',true);
+  const norm=s=>String(s).toLowerCase().replace(/[^a-z0-9]/g,'');
+  const s1=()=>{d.innerHTML='<h3>Import contacts</h3><p class="mut">Upload a CSV or paste rows (with a header line). Consent source and consent date are required for every contact.</p><label for="if">CSV file</label><input id="if" type="file" accept=".csv,text/csv"><label for="ip">…or paste CSV text</label><textarea id="ip" rows="6" placeholder="phone,first_name,consent_source,consent_date"></textarea><div class="err" id="ie"></div><div class="row end mt"><button class="btn" id="i0">Cancel</button><button class="btn pri" id="i1">Continue</button></div>';
+    $('#i0',d).onclick=closeModal;
+    $('#i1',d).onclick=()=>{const f=$('#if',d).files[0],txt=$('#ip',d).value.trim();if(!f&&!txt){$('#ie',d).textContent='Choose a file or paste some rows.';return}
+      Papa.parse(f||txt,{header:true,skipEmptyLines:true,complete:r=>{IM.rows=r.data;IM.hdr=r.meta.fields||[];if(!IM.rows.length){$('#ie',d).textContent='No rows found. Make sure the first line is a header.';return}
+        IFIELDS.forEach(x=>{const h=IM.hdr.find(h=>x[2].includes(norm(h)));IM.map[x[0]]=h||''});if(IM.map.first_name&&IM.map.first_name===IM.map.phone)IM.map.first_name='';s2()},error:e=>{$('#ie',d).textContent='Could not read the file: '+e.message}})}};
+  const s2=()=>{d.innerHTML='<h3>Match columns</h3><p class="mut">'+fnum(IM.rows.length)+' rows found. Match your columns to contact fields.</p><div class="grid g2">'+IFIELDS.map(x=>'<div><label for="m_'+x[0]+'">'+x[1]+'</label><select id="m_'+x[0]+'" data-f="'+x[0]+'"><option value="">'+(['consent_source','consent_date'].includes(x[0])?'— use one value for all rows —':'— skip —')+'</option>'+IM.hdr.map(h=>'<option value="'+esc(h)+'"'+(IM.map[x[0]]===h?' selected':'')+'>'+esc(h)+'</option>').join('')+'</select>'+(['consent_source','consent_date'].includes(x[0])&&!IM.map[x[0]]?'<input data-fx="'+x[0]+'" '+(x[0]==='consent_date'?'type="date"':'placeholder="e.g. Website form"')+' value="'+esc(IM.fx[x[0]]||'')+'" aria-label="Value for all rows: '+x[1]+'" style="margin-top:6px">':'')+'</div>').join('')+'</div><label class="chk mt"><input type="checkbox" id="iu"'+(IM.upd?' checked':'')+'>Update contacts that already exist</label><div class="err" id="ie"></div><div class="row end mt"><button class="btn" id="i0">Back</button><button class="btn pri" id="i1">Validate</button></div>';
+    document.querySelectorAll('[data-f]',d).forEach(s=>s.onchange=()=>{IM.map[s.dataset.f]=s.value;IM.upd=$('#iu',d).checked;s2()});
+    document.querySelectorAll('[data-fx]',d).forEach(i=>i.oninput=()=>IM.fx[i.dataset.fx]=i.value);
+    $('#i0',d).onclick=s1;
+    $('#i1',d).onclick=async e=>{IM.upd=$('#iu',d).checked;if(!IM.map.phone){$('#ie',d).textContent='Match the phone column.';return}
+      for(const f of['consent_source','consent_date'])if(!IM.map[f]&&!IM.fx[f]){$('#ie',d).textContent='Provide '+f.replace('_',' ')+' (a column or one value for all rows).';return}
+      try{IM.rep=await btnBusy(e.target,()=>api('importContacts',{rows:build(),dry_run:true,update_existing:IM.upd}));s3()}catch(er){$('#ie',d).textContent=er.message}}};
+  const build=()=>IM.rows.map(r=>{const o={};IFIELDS.forEach(x=>{const f=x[0];o[f]=IM.map[f]?(r[IM.map[f]]==null?'':r[IM.map[f]]):(IM.fx[f]||'')});return o});
+  const tbl=(t,l)=>l.length?'<h3 class="mt">'+t+' ('+fnum(l.length)+(l.length>=200?'+':'')+')</h3><div class="tw" style="max-height:160px;overflow:auto"><table><thead><tr><th>Row</th><th>Number</th><th>Reason</th></tr></thead><tbody>'+l.map(x=>'<tr><td>'+x.row+'</td><td>'+esc(x.phone)+'</td><td>'+esc(x.reason)+'</td></tr>').join('')+'</tbody></table></div>':'';
+  const s3=()=>{const r=IM.rep,ok=r.new_count+r.update_count;d.innerHTML='<h3>Validation report</h3><div class="grid g6"><div class="card kpi"><span>Rows</span><b>'+fnum(r.total)+'</b></div><div class="card kpi"><span>New</span><b style="color:var(--ok)">'+fnum(r.new_count)+'</b></div><div class="card kpi"><span>Updates</span><b>'+fnum(r.update_count)+'</b></div><div class="card kpi"><span>Invalid</span><b>'+fnum(r.invalid_count)+'</b></div><div class="card kpi"><span>Duplicates</span><b>'+fnum(r.duplicates_count)+'</b></div><div class="card kpi"><span>Opted-out</span><b>'+fnum(r.suppressed_count)+'</b></div></div>'+tbl('Invalid',r.invalid)+tbl('Duplicates',r.duplicates)+tbl('Suppressed (opted out)',r.suppressed)+'<div class="err" id="ie"></div><div class="row end mt"><button class="btn" id="i0">Back</button><button class="btn pri" id="i1"'+(ok?'':' disabled')+'>Import '+fnum(ok)+' contacts</button></div>';
+    $('#i0',d).onclick=s2;$('#i1',d).onclick=async e=>{try{const f=await btnBusy(e.target,()=>api('importContacts',{rows:build(),dry_run:false,update_existing:IM.upd}));closeModal();toast('Imported '+f.new_count+' new, updated '+f.update_count+', skipped '+(f.invalid_count+f.duplicates_count+f.suppressed_count),'ok');done()}catch(er){$('#ie',d).textContent=er.message}}};
+  s1();
+}
+
+/* ---- Templates ---- */
+PAGES.templates=async()=>{
+  const draw=r=>{$('#tg').innerHTML=r.templates.length?'<div class="grid g3">'+r.templates.map(t=>'<div class="card" style="margin:0"><div class="row"><b>'+esc(t.name)+'</b><span class="sp"></span>'+chip(t.status)+'</div><div class="mut sm" style="margin:2px 0 10px">'+esc(t.category)+' · '+esc(t.language)+' · '+t.body_vars+' variable(s)</div>'+bubble(t,[],'')+'</div>').join('')+'</div>':'<div class="card">'+empty('No templates found','Templates are created in Meta WhatsApp Manager. Create one there, then press Refresh.')+'</div>';$('#tf').textContent=r.demo?'Showing demo templates.':'Last fetched '+fdt(r.fetched_at)};
+  main.innerHTML=head('Templates','<span class="mut sm" id="tf"></span><button class="btn pri" id="tr">Refresh from Meta</button>')+'<div class="alert">Templates are read-only here. Create and edit them in Meta WhatsApp Manager.</div><div id="tg"></div>';
+  $('#tr').onclick=async e=>{try{draw(await btnBusy(e.target,()=>api('refreshTemplates')));toast('Templates refreshed','ok')}catch(er){toast(er.message,'error')}};
+  draw(await api('listTemplates'));
+};
+
+/* ---- Replies ---- */
+PAGES.replies=async()=>{
+  let q={page:1,page_size:50,search:'',tag:''};
+  main.innerHTML=head('Replies')+'<div class="card"><div class="row" style="margin-bottom:12px"><input id="rs" placeholder="Search replies" aria-label="Search replies" style="max-width:260px"><select id="rf" aria-label="Filter" style="max-width:170px"><option value="">All replies</option><option value="OPT-OUT">Opt-outs only</option></select></div><div id="rl"></div></div>';
+  const load=async()=>{$('#rl').innerHTML=skel(5);const r=await api('listReplies',q);
+    $('#rl').innerHTML=r.items.length?'<div class="tw"><table><thead><tr><th>Received</th><th>Number</th><th>Message</th><th>Campaign</th><th>Tag</th></tr></thead><tbody>'+r.items.map(x=>'<tr><td>'+fdt(x.received_at)+'</td><td>'+esc(x.phone)+(x.name?'<div class="mut sm">'+esc(x.name)+'</div>':'')+'</td><td style="max-width:380px;white-space:pre-wrap;word-break:break-word">'+esc(x.text)+'</td><td>'+esc(x.campaign_name||'—')+'</td><td>'+(x.tag?chip(x.tag):'')+'</td></tr>').join('')+'</tbody></table></div>'+pager(r):empty('No replies yet','Customer replies appear here once they arrive.');
+    bindPager($('#rl'),p=>{q.page=p;load()})};
+  $('#rs').oninput=debounce(e=>{q.search=e.target.value;q.page=1;load()},300);$('#rf').onchange=e=>{q.tag=e.target.value;q.page=1;load()};
+  await load();
+};
+
+/* ---- Opt-outs ---- */
+PAGES.optouts=async()=>{
+  let q={page:1,page_size:50,search:''};
+  main.innerHTML=head('Opt-outs','<button class="btn" id="ob">Bulk import</button><button class="btn pri" id="oa">Add number</button>')+'<div class="alert">Numbers on this list never receive messages and are kept permanently, even after data retention clean-up.</div><div class="card"><input id="os" placeholder="Search number or source" aria-label="Search opt-outs" style="max-width:280px;margin-bottom:12px"><div id="ol"></div></div>';
+  const load=async()=>{$('#ol').innerHTML=skel(5);const r=await api('listSuppression',q);
+    $('#ol').innerHTML=r.items.length?'<div class="tw"><table><thead><tr><th>Number</th><th>Date</th><th>Source</th><th></th></tr></thead><tbody>'+r.items.map(x=>'<tr><td>'+esc(x.phone)+'</td><td>'+fdt(x.date)+'</td><td>'+esc(x.source)+'</td><td><button class="btn xs" data-rm="'+esc(x.phone)+'">Remove</button></td></tr>').join('')+'</tbody></table></div>'+pager(r):empty('No opt-outs yet','People who reply STOP will appear here.');
+    bindPager($('#ol'),p=>{q.page=p;load()});
+    document.querySelectorAll('[data-rm]').forEach(b=>b.onclick=async()=>{if(!await confirmDlg({title:'Remove from opt-out list?',body:'<b>'+esc(b.dataset.rm)+'</b> could receive messages again. Only do this if the person has asked to be re-added.',ok:'Remove',danger:1,typed:'DELETE'}))return;try{await api('removeSuppression',{phone:b.dataset.rm,confirm_text:'DELETE'});toast('Removed from opt-outs','ok');load()}catch(e){toast(e.message,'error')}})};
+  $('#os').oninput=debounce(e=>{q.search=e.target.value;q.page=1;load()},300);
+  $('#oa').onclick=()=>{const d=openModal('<h3>Add opt-out</h3><label for="o1">Phone number</label><input id="o1" placeholder="087 123 4567 or +353…"><label for="o2">Source</label><input id="o2" value="Manual"><div class="err" id="oe" role="alert"></div><div class="row end mt"><button class="btn" id="o3">Cancel</button><button class="btn pri" id="o4">Add</button></div>');$('#o3',d).onclick=closeModal;$('#o4',d).onclick=async()=>{try{await api('addSuppression',{phone:$('#o1',d).value,source:$('#o2',d).value});closeModal();toast('Added to opt-outs','ok');load()}catch(e){$('#oe',d).textContent=e.message}}};
+  $('#ob').onclick=()=>{const d=openModal('<h3>Bulk import opt-outs</h3><p class="mut">One number per line, or upload a CSV with numbers in the first column.</p><textarea id="b1" rows="7" aria-label="Numbers"></textarea><input id="b2" type="file" accept=".csv,.txt" aria-label="CSV file" style="margin-top:8px"><div class="err" id="be" role="alert"></div><div class="row end mt"><button class="btn" id="b3">Cancel</button><button class="btn pri" id="b4">Import</button></div>');
+    $('#b3',d).onclick=closeModal;$('#b2',d).onchange=e=>{const f=e.target.files[0];if(f)f.text().then(t=>$('#b1',d).value=t)};
+    $('#b4',d).onclick=async()=>{const ph=$('#b1',d).value.split(/\r?\n/).map(l=>l.split(',')[0].replace(/["']/g,'').trim()).filter(l=>l&&!/^(phone|number)/i.test(l));if(!ph.length){$('#be',d).textContent='Add at least one number.';return}
+      try{const r=await api('importSuppression',{phones:ph});closeModal();toast(r.added+' added, '+r.already+' already listed, '+r.invalid_count+' invalid','ok');load()}catch(e){$('#be',d).textContent=e.message}}};
+  await load();
+};
+
+/* ---- Automations ---- */
+PAGES.automations=async()=>{
+  const rules=[['Booking created','Send immediately','booking_confirmation'],['Before appointment','24 hours before','appointment_reminder'],['After appointment','2 hours after','aftercare_tips']];
+  main.innerHTML=head('Automations')+(FEATURES.automations?'<div class="alert">Automations are enabled. Your booking system creates messages through the ingest_event API; rules shown here are for reference.</div>':'')+'<div class="ribbon">'+(FEATURES.automations?'':'<div class="ov2"><div>Coming in Phase 2</div></div>')+'<div class="'+(FEATURES.automations?'':'dim')+'" aria-hidden="'+!FEATURES.automations+'"><div class="card"><div class="row"><h2 style="margin:0">Rules</h2><span class="sp"></span><button class="btn pri" '+(FEATURES.automations?'':'disabled tabindex="-1"')+'>New rule</button></div></div>'+rules.map(r=>'<div class="card"><div class="grid g6"><div><label>Trigger</label><select disabled><option>'+r[0]+'</option></select></div><div><label>Template</label><select disabled><option>'+r[2]+'</option></select></div><div><label>Delay</label><select disabled><option>'+r[1]+'</option></select></div><div><label>Status</label><div style="padding-top:6px">'+chip(FEATURES.automations?'YES':'Draft')+'</div></div></div></div>').join('')+'</div></div><p class="mut sm">The backend queue is ready. Day-before reminders are events with a future send time sent to the ingest_event API.</p>';
+};
+PAGES.inbox=async()=>{main.innerHTML=head('Inbox')+'<div class="card">'+empty('Inbox is enabled','Two-way conversations will appear here.')+'</div>'};
+PAGES.integrations=async()=>{main.innerHTML=head('Integrations')+'<div class="card">'+empty('Integrations are enabled','Booking system and HubSpot connections will appear here.')+'</div>'};
+
+/* ---- Settings ---- */
+PAGES.settings=async()=>{
+  const d=await api('getSettings'),s=d.settings,sc=d.secrets;setDemo(s.demo_mode);
+  const sec=(id,l,k,ph)=>'<label for="'+id+'">'+l+'</label><input id="'+id+'" type="password" autocomplete="off" placeholder="'+(sc[k].set?esc(sc[k].masked)+' (saved, type to replace)':ph)+'">';
+  main.innerHTML=head('Settings','<button class="btn" id="st">Test connection</button><button class="btn" id="sm">Send test message</button><button class="btn pri" id="ss">Save changes</button>')+
+  '<div class="card"><h2>Mode</h2><label class="chk"><input type="checkbox" id="s_demo"'+(s.demo_mode?' checked':'')+'>Demo mode (no messages are sent to Meta; everything is simulated)</label></div>'+
+  '<div class="card"><h2>Meta WhatsApp credentials</h2><p class="mut sm">Write-only. Saved values are never shown in full.</p><div class="grid g2"><div>'+sec('s_tok','Access token','meta_token','Paste access token')+'</div><div>'+sec('s_pid','Phone Number ID','phone_number_id','Paste Phone Number ID')+'</div><div>'+sec('s_wid','WABA ID','waba_id','Paste WABA ID')+'</div><div>'+sec('s_vt','Verify token','verify_token','Choose a verify token')+'</div></div></div>'+
+  '<div class="card"><h2>Sending</h2><div class="grid g2"><div><label for="s_cc">Default country code</label><input id="s_cc" value="'+esc(s.default_country_code)+'"></div><div><label for="s_dl">Daily unique-recipient limit</label><input id="s_dl" type="number" min="1" value="'+s.daily_limit+'"></div><div><label for="s_rd">Retention (days)</label><input id="s_rd" type="number" min="1" max="365" value="'+s.retention_days+'"></div></div><h3 class="mt">Meta rate per message (EUR)</h3><div class="grid g2"><div><label for="s_rm">Marketing</label><input id="s_rm" type="number" step="0.001" min="0" value="'+s.rate_marketing+'"></div><div><label for="s_ru">Utility</label><input id="s_ru" type="number" step="0.001" min="0" value="'+s.rate_utility+'"></div><div><label for="s_ra">Authentication</label><input id="s_ra" type="number" step="0.001" min="0" value="'+s.rate_authentication+'"></div></div><label class="chk mt"><input type="checkbox" id="s_oc"'+(s.send_optout_confirmation?' checked':'')+'>Reply to STOP messages with a confirmation</label><label for="s_ot">Confirmation text</label><input id="s_ot" maxlength="300" value="'+esc(s.optout_confirmation_text)+'"></div>'+
+  '<div class="card"><h2>Webhook and API</h2><label for="s_wu">Webhook callback URL</label><div class="row" style="flex-wrap:nowrap"><input id="s_wu" readonly value="'+esc(d.webhook_url)+'"><button class="btn" id="s_cp">Copy</button></div><label>Verify token</label><input readonly value="'+esc(sc.verify_token.set?sc.verify_token.masked:'Not set')+'" aria-label="Verify token (masked)"><label>Automation API key (for ingest_event)</label><div class="row" style="flex-wrap:nowrap"><input readonly value="'+esc(sc.api_key.set?sc.api_key.masked:'Not set')+'" aria-label="API key (masked)"><button class="btn" id="s_rk">Generate new key</button></div><p class="mut sm mt">Background triggers: '+(d.triggers_installed?chip('YES')+' installed':chip('NO')+' not installed, run setupTriggers() in Apps Script')+' · Graph API '+esc(d.graph_version)+' · Backend v'+esc(d.version)+'</p></div>'+
+  '<div class="card"><h2>Security</h2><button class="btn" id="s_pw">Change password</button></div>';
+  const num=id=>Number($('#'+id).value);
+  $('#ss').onclick=async e=>{
+    const wasDemo=s.demo_mode,nowDemo=$('#s_demo').checked;
+    if(wasDemo&&!nowDemo&&!await confirmDlg({title:'Switch to live mode?',body:'Demo contacts, demo messages and demo campaigns will be deleted. Real messages will go to Meta.',ok:'Go live'}))return;
+    const secrets={meta_token:$('#s_tok').value,phone_number_id:$('#s_pid').value,waba_id:$('#s_wid').value,verify_token:$('#s_vt').value};
+    try{await btnBusy(e.target,()=>api('saveSettings',{settings:{demo_mode:nowDemo,default_country_code:$('#s_cc').value,daily_limit:num('s_dl'),retention_days:num('s_rd'),rate_marketing:num('s_rm'),rate_utility:num('s_ru'),rate_authentication:num('s_ra'),send_optout_confirmation:$('#s_oc').checked,optout_confirmation_text:$('#s_ot').value},secrets}));toast('Settings saved','ok');setDemo(nowDemo);render()}catch(er){toast(er.message,'error')}};
+  $('#st').onclick=async e=>{try{const r=await btnBusy(e.target,()=>api('testConnection'));toast(r.message+(r.display_phone_number?' '+r.display_phone_number:''),'ok')}catch(er){toast(er.message,'error')}};
+  $('#s_cp').onclick=()=>{navigator.clipboard.writeText($('#s_wu').value).then(()=>toast('Copied','ok'),()=>toast('Copy failed. Select the text and copy it manually.','error'))};
+  $('#s_rk').onclick=async()=>{if(!await confirmDlg({title:'Generate a new API key?',body:'The current key stops working immediately. Update every system that calls ingest_event.',ok:'Generate',danger:1}))return;try{const r=await api('saveSettings',{settings:{},rotate_api_key:true});const m=openModal('<h3>New API key</h3><p class="mut">Copy it now. It is shown only once.</p><input readonly id="nk" value="'+esc(r.api_key_new)+'" aria-label="New API key"><div class="row end mt"><button class="btn pri" id="nkc">Done</button></div>');$('#nk',m).select();$('#nkc',m).onclick=()=>{closeModal();render()}}catch(e){toast(e.message,'error')}};
+  $('#sm').onclick=()=>{const m=openModal('<h3>Send test message</h3><label for="t1">Phone number</label><input id="t1" placeholder="+353…"><label for="t2">Template name</label><input id="t2" value="hello_world"><label for="t3">Language code</label><input id="t3" value="en_US"><label for="t4">Variables (comma separated, optional)</label><input id="t4"><div class="err" id="te" role="alert"></div><div class="row end mt"><button class="btn" id="t5">Cancel</button><button class="btn pri" id="t6">Send</button></div>');
+    $('#t5',m).onclick=closeModal;$('#t6',m).onclick=async e=>{try{const r=await btnBusy(e.target,()=>api('sendTestMessage',{phone:$('#t1',m).value,template_name:$('#t2',m).value,language:$('#t3',m).value,variables:$('#t4',m).value.split(',').map(x=>x.trim()).filter(Boolean)}));closeModal();toast(r.message,'ok')}catch(er){$('#te',m).textContent=er.message}}};
+  $('#s_pw').onclick=()=>{const m=openModal('<h3>Change password</h3><form id="pf"><label for="p1">Current password</label><input id="p1" type="password" autocomplete="current-password" required><label for="p2">New password (min. 12 characters)</label><input id="p2" type="password" autocomplete="new-password" minlength="12" required><label for="p3">Repeat new password</label><input id="p3" type="password" autocomplete="new-password" required><div class="err" id="pe" role="alert"></div><div class="row end mt"><button type="button" class="btn" id="p4">Cancel</button><button class="btn pri">Change password</button></div></form>');
+    $('#p4',m).onclick=closeModal;$('#pf',m).onsubmit=async e=>{e.preventDefault();if($('#p2',m).value!==$('#p3',m).value){$('#pe',m).textContent='The new passwords do not match.';return}
+      try{const r=await api('changePassword',{current_password:$('#p1',m).value,new_password:$('#p2',m).value});S.token=r.token;ssSet('rn_tok',r.token);closeModal();toast('Password changed. Other sessions were signed out.','ok')}catch(er){$('#pe',m).textContent=er.message}}};
+};
+
+/* ---- Activity log ---- */
+PAGES.activity=async()=>{
+  let q={page:1,page_size:50,search:''};
+  main.innerHTML=head('Activity log')+'<div class="card"><input id="as" placeholder="Search activity" aria-label="Search activity" style="max-width:280px;margin-bottom:12px"><div id="al"></div></div>';
+  const load=async()=>{$('#al').innerHTML=skel(6);const r=await api('listAuditLog',q);
+    $('#al').innerHTML=r.items.length?'<div class="tw"><table><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Details</th></tr></thead><tbody>'+r.items.map(x=>'<tr><td>'+fdt(x.ts)+'</td><td>'+esc(x.actor)+'</td><td>'+chip(x.action)+'</td><td style="word-break:break-word">'+esc(x.details)+'</td></tr>').join('')+'</tbody></table></div>'+pager(r):empty('No activity yet');
+    bindPager($('#al'),p=>{q.page=p;load()})};
+  $('#as').oninput=debounce(e=>{q.search=e.target.value;q.page=1;load()},300);
+  await load();
+};
+
+/* ---------- start ---------- */
+if(S.token&&getUrl())boot();else loginView('');
+</script>
+</body>
+</html>
